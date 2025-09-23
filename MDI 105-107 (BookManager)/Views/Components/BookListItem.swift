@@ -18,7 +18,9 @@ struct BookListItem: View {
                 .frame(width: 50, height: 50)
             VStack(alignment: .leading){
                 Text(book.title)
-                Text(book.description).font(.system(size: 12))
+                Text(book.description)
+                    .font(.system(size: 12))
+                
             }
         }
     }

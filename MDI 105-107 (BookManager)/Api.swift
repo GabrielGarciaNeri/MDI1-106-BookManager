@@ -15,6 +15,7 @@ func getBooks() -> [Book] {
                 image:"lotr_fellowship",
                 description:"The first book in the trilogy",
                 author:"J.R.R. Tolkien",
+                
             ),
             Book(
                 title:"The Two Towers",
@@ -27,7 +28,12 @@ func getBooks() -> [Book] {
                 image:"lotr_king",
                 description:"The third and last book in the trilogy",
                 author:"J.R.R. Tolkien",
-            )
+                isFavorite: true,
+            ),
+            Book(
+                title: "Empty book",
+                isFavorite: true,
+                )
 
         
     ]
