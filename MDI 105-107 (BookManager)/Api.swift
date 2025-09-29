@@ -13,7 +13,7 @@ func getBooks() -> [Book] {
             Book(
                 title:"The Fellowship of the Ring",
                // image:"lotr_fellowship",
-                description:"The first book in the trilogy.",
+                description:"The first book in the trilogy",
                 author:"J.R.R. Tolkien",
                 
             ),
