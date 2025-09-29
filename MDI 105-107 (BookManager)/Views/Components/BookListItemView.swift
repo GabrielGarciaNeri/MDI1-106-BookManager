@@ -7,20 +7,25 @@
 
 import SwiftUI
 
-struct BookListItem: View {
+struct BookListItemView: View {
     
-    var book: Book
+    let book: Book
+    
     var body: some View {
         HStack{
-            Image(book.image)
+            Image(
+                uiImage: (book.imageData != nil ? UIImage(data: book.imageData!) : UIImage(resource: .defaultBook)!)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 50, height: 50)
             VStack(alignment: .leading){
                 Text(book.title)
+                    .padding(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
                 Text(book.description)
                     .font(.system(size: 12))
-                
+                    .foregroundColor(.secondary)
+                    .padding(4)
+                //Text("id: \(book.id)")
             }
         }
     }

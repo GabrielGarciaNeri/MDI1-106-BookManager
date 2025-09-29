@@ -10,14 +10,14 @@ import SwiftUI
 struct BookListView: View {
     @Binding var books: [Book]
     @State private var showAddView: Bool = false
-    @State var newBook = Book(title:"??")
+    @State var newBook = Book(title:"")
     
     var body: some View {
         NavigationStack{
             List($books, id: \.self.id){ $bookItem in
             
                 NavigationLink(destination: BookDetailView(book: $bookItem)){
-                    BookListItem(book: bookItem)
+                    BookListItemView(book: bookItem)
                 }
             }
             .navigationTitle("BookManager")
@@ -26,12 +26,15 @@ struct BookListView: View {
             })
             .sheet(
                 isPresented: $showAddView,
-                onDismiss: {
-                    let _ = print("This is dismissed")
-                },
-                content: {
-                    EditView(book: $newBook)
-            },)
+                
+            ){
+                if !newBook.title.isEmpty{
+                    books.append(newBook)
+                }
+                newBook = Book(title: "")
+            } content: {
+                    AddEditView(book: $newBook)
+            }
         }
     }
 }
