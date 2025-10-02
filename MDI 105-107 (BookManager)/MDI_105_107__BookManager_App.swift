@@ -21,7 +21,7 @@ struct MDI_105_107__BookManager_App: App {
     }
     init() {
         do {
-            modelContainer = try ModelContainer(for:UploadedImage.self)
+            modelContainer = try ModelContainer(for:UploadedImage.self, PersistentBook.self)
         } catch {
             fatalError("Failed to load model container")
         }

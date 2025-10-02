@@ -6,17 +6,19 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct BookListView: View {
-    @Binding var books: [Book]
+ //   @Binding var books: [PersistentBook]
+    @Query var books: [PersistentBook]
     @State private var showAddView: Bool = false
     @State var newBook = Book(title:"")
     
     var body: some View {
         NavigationStack{
-            List($books, id: \.self.id){ $bookItem in
+            List(books, id: \.self.id){ bookItem in
             
-                NavigationLink(destination: BookDetailView(book: $bookItem)){
+                NavigationLink(destination: BookDetailView(book: bookItem)){
                     BookListItemView(book: bookItem)
                 }
             }
@@ -28,12 +30,12 @@ struct BookListView: View {
                 isPresented: $showAddView,
                 
             ){
-                if !newBook.title.isEmpty{
-                    books.append(newBook)
-                }
-                newBook = Book(title: "")
+//                if !newBook.title.isEmpty{
+//                    books.append(newBook)
+//                }
+//                newBook = Book(title: "")
             } content: {
-                    AddEditView(book: $newBook)
+                    AddEditView()
             }
         }
     }

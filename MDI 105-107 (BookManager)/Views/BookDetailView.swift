@@ -9,28 +9,39 @@ import SwiftUI
 
 struct BookDetailView: View {
     
-    @Binding var book: Book
+    var book: PersistentBook
     @State private var showEditView: Bool = false
     
     var body: some View {
-        NavigationStack{
-            Text("Book Detail:")
-                .foregroundStyle(.secondary)
-                .padding()
+        ZStack{
+           LinearGradient(
+            gradient: Gradient(
+                colors: [.gray.opacity(0.1), .gray.opacity(0.3)]),
+            startPoint: .top,
+            endPoint: .bottom
+           )
+           .ignoresSafeArea()
             
             ScrollView{
-                VStack{
+                VStack(alignment: .leading, spacing: 20){
                     HStack{
-                        Image(book.image)
+
+                        Image(
+                            uiImage: (book.imageData != nil ?
+                                UIImage(data: book.imageData!)
+                                :UIImage(resource: .defaultBook))!)
                             .resizable()
                             .scaledToFit()
                             .frame(width: 80, height: 80)
-                        Text(book.title)
-                            .font(.title.bold())
-                        if (book.author != ""){
-                            Text("by \(book.author)")
-                                .font(.headline)
-                                .foregroundColor(.secondary)
+                            .padding()
+                        VStack{
+                            Text(book.title)
+                                .font(.system(size: 36, weight: .bold, design: .serif))
+                            if (book.author != ""){
+                                Text("by \(book.author)")
+                                    .font(.headline)
+                                    .foregroundColor(.secondary)
+                            }
                         }
                     }
                     HStack{
@@ -42,11 +53,11 @@ struct BookDetailView: View {
                         }
                         
                         Spacer()
-                        FavoriteToggle(isFavorite: $book.isFavorite)
+//                        FavoriteToggle(isFavorite: book.isFavorite)
                     }
                                         
-                    if (book.description != "") {
-                            Text(book.description)
+                    if (book.summary != "") {
+                            Text(book.summary)
                     }
                    
                     if (book.rating == 0){
@@ -68,7 +79,7 @@ struct BookDetailView: View {
             showEditView.toggle()
         })
         .sheet(isPresented: $showEditView, content: {
-            AddEditView(book: $book)
+            AddEditView(book: book)
         })
         Spacer() //pushh everything up
     }

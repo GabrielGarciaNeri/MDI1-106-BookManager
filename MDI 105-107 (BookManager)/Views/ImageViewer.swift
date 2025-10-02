@@ -16,17 +16,19 @@ struct ImageViewer: View {
                 Text("No images found")
             } else {
                 List(images, id: \.id){ image in
-                    Image(
-                        uiImage: UIImage(data: (image.imageData as Data?)!)
-                        ?? UIImage(resource: .defaultBook)
-                    )
-                    .resizable()
-                    .frame(width: 100, height: 100)
-                    
+                    HStack{
+                        Image(
+                            uiImage: UIImage(data: (image.imageData as Data?)!)
+                            ?? UIImage(resource: .defaultBook)
+                        )
+                        .resizable()
+                        .frame(width: 100, height: 100)
+                        
+                    }
+                    .navigationTitle("Images")
                 }
-                .navigationTitle("Images")
+                
             }
-            
         }
     }
 }

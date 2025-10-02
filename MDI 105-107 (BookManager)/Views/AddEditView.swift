@@ -10,20 +10,21 @@ import SwiftData
 
 struct AddEditView: View {
     
-    @Binding var book: Book
-    @State var workingBook: Book
+    var book: PersistentBook? = nil
+    @State var workingBook: PersistentBook
     @Environment(\.dismiss) var dismiss
     @State private var navigationTitle: String
     @State private var cover: UIImage? = nil
     
-    private let modelContext: ModelContext
-
-    init(book: Binding<Book>){
-        self._book = book
-        _workingBook = .init(initialValue: book.wrappedValue)
-        self._navigationTitle = State(initialValue: book.wrappedValue.title.isEmpty ? "Add Book" : "Edit Book")
-        if(book.imageData != nil){
-            cover = UIImage(data: book.wrappedValue.imageData!)
+    
+    @Environment(\.modelContext) private var modelContext
+    
+    init(book: PersistentBook? = nil){
+        self.book = book
+        _workingBook = .init(initialValue: book ?? PersistentBook(title: ""))
+        self._navigationTitle = State(initialValue: book != nil ? "Add Book" : "Edit Book")
+        if(book?.imageData != nil){
+            cover = UIImage(data: book!.imageData!)
         }
     }
     
@@ -56,42 +57,62 @@ struct AddEditView: View {
                                 
                             }
                         }
-                        TextEditor(text: $workingBook.description)
+                        TextEditor(text: $workingBook.summary)
                             .frame(height: 100)
                     }
                     Section(header: Text("My review")){
-
+                        
                         StarRatingView(rating: $workingBook.rating)
                         TextEditor(text: $workingBook.review)
                             .frame(height: 150)
                     }
                 }
-                    
+                
             }.navigationTitle(navigationTitle)
                 .toolbar{
                     ToolbarItem(placement: .confirmationAction){
                         Button("Save") {
-                            if (cover != nil){
-                                var newImage = UploadedImage(
-                                                imageName:"image for \(workingBook.title)",
-                                                imageData: cover.jpegData(compressionQuality: 0.8))
+                            let isANewBook = book == nil
+                            let bookToSave = book ?? PersistentBook(title:"")
+//                            if (cover != nil){
+//                                    let newImage = UploadedImage(
+//                                        imageName:"image for \(workingBook.title)",
+//                                        imageData: cover?.jpegData(compressionQuality: 0.8))
+//                                    do {
+//                                        modelContext.insert(newImage)
+//                                        try modelContext.save()
+//                                    } catch {
+//                                        print("Failed to save image: \(error)")
+//                                    }
+//                                    workingBook.imageData = newImage.imageData
+//                                }
+                                bookToSave.title = workingBook.title
+                                bookToSave.author = workingBook.author
+                                bookToSave.genre = workingBook.genre
+                                bookToSave.status = workingBook.status
+                                bookToSave.rating = workingBook.rating
+                                bookToSave.review = workingBook.review
+                            if(cover != nil){
+                                bookToSave.imageData = cover?.jpegData(compressionQuality: 0.8)
+                            }
+                               
                                 do {
-                                    modelContext.insert(newImage)
+                                    if (isANewBook){
+                                        let _ = print("We are creating a new book")
+                                        modelContext.insert(bookToSave)
+                                    }
+                                    
                                     try modelContext.save()
                                 } catch {
                                     print("Failed to save image: \(error)")
                                 }
-                                workingBook.image
+
+                                dismiss()
                             }
-                            
-                            
-                            //Save the view
-                            book = workingBook
-                            dismiss()
+                                .disabled(workingBook.title.isEmpty)
                         }
-                        .disabled(workingBook.title.isEmpty)
                     }
                 }
         }
     }
-}
+

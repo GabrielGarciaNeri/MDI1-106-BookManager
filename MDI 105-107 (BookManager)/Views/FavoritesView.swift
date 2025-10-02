@@ -6,11 +6,12 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct FavoritesView: View {
     @AppStorage(SETTINGS_GRID_COLUMNS_KEY) var gridColumns: Int = SETTINGS_GRID_COLUMNS_DEFAULT_VALUE
     
-    @Binding var books: [Book]
+    @Query var books:[PersistentBook]
     @State var isFilteringSheetPresented: Bool = false
     @State var selectedGenre: Genre?
     @State var selectedStatus: ReadingStatus?
@@ -19,12 +20,8 @@ struct FavoritesView: View {
         Array(repeating: GridItem(.flexible()), count: gridColumns)
     }
     
-    private var favoriteBooks: [Binding<Book>] {
-        $books.filter{
-            $0.wrappedValue.isFavorite
-            && (selectedGenre == nil || $0.wrappedValue.genre == selectedGenre )
-            && (selectedStatus == nil || $0.wrappedValue.status == selectedStatus)
-            }
+    private var favoriteBooks: [PersistentBook] {
+        filterFavoriteBooks(books: books, selectedGenre: selectedGenre, selectedStatus: selectedStatus)
     }
     
     var body: some View {
@@ -62,3 +59,16 @@ struct FavoritesView: View {
     
     
 }
+
+func filterFavoriteBooks(
+    books: [PersistentBook],
+    selectedGenre: Genre?,
+    selectedStatus: ReadingStatus?,
+    isNegative: Bool? = false
+) -> [PersistentBook] {
+    return books.filter{
+            (isNegative! ? !$0.isFavorite : $0.isFavorite )
+            && (selectedGenre == nil || $0.genre == selectedGenre )
+            && (selectedStatus == nil || $0.status == selectedStatus)
+        }
+    }

@@ -5,7 +5,7 @@
 //  Created by Jr . on 9/25/25.
 //
 
-enum ReadingStatus: String, CaseIterable {
+enum ReadingStatus: String, CaseIterable, Hashable, Codable{
     case planToRead = "Plan to read"
     case reading = "Reading"
     case read = "Read"

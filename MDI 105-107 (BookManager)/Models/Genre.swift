@@ -5,7 +5,7 @@
 //  Created by Jr . on 9/25/25.
 //
 
-enum Genre: String, CaseIterable {
+enum Genre: String, CaseIterable, Hashable, Codable {
     case classic = "Classic"
     case fantasy = "Fantasy"
     case scienceFiction = "Science Fiction"
