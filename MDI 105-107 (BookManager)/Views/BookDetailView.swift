@@ -8,82 +8,101 @@
 import SwiftUI
 
 struct BookDetailView: View {
-    
-    var book: PersistentBook
-    @State private var showEditView: Bool = false
-    
-    var body: some View {
-        ZStack{
-           LinearGradient(
-            gradient: Gradient(
-                colors: [.gray.opacity(0.1), .gray.opacity(0.3)]),
-            startPoint: .top,
-            endPoint: .bottom
-           )
-           .ignoresSafeArea()
-            
-            ScrollView{
-                VStack(alignment: .leading, spacing: 20){
-                    HStack{
 
+    let book: PersistentBook
+    @State private var showEditView = false
+    @Environment(\.modelContext) private var modelContext   // <-- needed to save favorite toggle
+
+    var body: some View {
+        ZStack {
+            LinearGradient(
+                gradient: Gradient(colors: [.gray.opacity(0.1), .gray.opacity(0.3)]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    HStack {
                         Image(
-                            uiImage: (book.imageData != nil ?
-                                UIImage(data: book.imageData!)
-                                :UIImage(resource: .defaultBook))!)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 80, height: 80)
-                            .padding()
-                        VStack{
+                            uiImage: {
+                                if let data = book.imageData, let ui = UIImage(data: data) {
+                                    return ui
+                                } else {
+                                    return UIImage(resource: .defaultBook)
+                                }
+                            }()
+                        )
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 80, height: 80)
+                        .padding()
+
+                        VStack {
                             Text(book.title)
                                 .font(.system(size: 36, weight: .bold, design: .serif))
-                            if (book.author != ""){
+                                .multilineTextAlignment(.center)
+
+                            if !book.author.isEmpty {
                                 Text("by \(book.author)")
                                     .font(.headline)
                                     .foregroundColor(.secondary)
                             }
                         }
                     }
-                    HStack{
-                        if (book.genre != .unknown){
-                            CustomCapsule(text:book.genre.rawValue)
+
+                    HStack {
+                        if book.genre != .unknown {
+                            CustomCapsule(text: book.genre.rawValue)
                         }
-                        if (book.status != .unknown){
-                            CustomCapsule(text:book.status.rawValue, color: .secondary)
+                        if book.status != .unknown {
+                            CustomCapsule(text: book.status.rawValue, color: .secondary)
                         }
-                        
                         Spacer()
-//                        FavoriteToggle(isFavorite: book.isFavorite)
                     }
-                                        
-                    if (book.summary != "") {
-                            Text(book.summary)
+
+                    if !book.summary.isEmpty {
+                        Text(book.summary)
                     }
-                   
-                    if (book.rating == 0){
+
+                    if book.rating == 0 {
                         Text("No rating yet")
-                    }else {
+                    } else {
                         Text("Rating: \(book.rating) \(book.rating == 1 ? "star" : "stars")")
                     }
-                    Text(book.review)
+
+                    if !book.review.isEmpty {
+                        Text(book.review)
+                    }
                 }
                 .padding()
-                
-                
             }
-            
         }
         .navigationTitle(book.title)
-        .navigationBarTitleDisplayMode(.inline) //lines it up with the blue button
-        .navigationBarItems(trailing: Button("Edit"){
-            showEditView.toggle()
-        })
-        .sheet(isPresented: $showEditView, content: {
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            // Favorite toggle
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    book.isFavorite.toggle()
+                    try? modelContext.save()
+                } label: {
+                    Image(systemName: book.isFavorite ? "heart.fill" : "heart")
+                        .foregroundStyle(book.isFavorite ? .red : .primary)
+                }
+                .accessibilityLabel(book.isFavorite ? "Remove from favorites" : "Add to favorites")
+            }
+
+            // Edit button
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Edit") { showEditView = true }
+            }
+        }
+        .sheet(isPresented: $showEditView) {
             AddEditView(book: book)
-        })
-        Spacer() //pushh everything up
+        }
     }
 }
-
 
 
