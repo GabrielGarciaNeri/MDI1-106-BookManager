@@ -10,6 +10,10 @@ import SwiftData
 
 struct AddEditView: View {
 
+   // @StateObject private var viewModel: AddEditViewModel will be added
+    // @Enviroment(\.dismiss) var dismiss will be added
+    
+    
     // If non-nil we are editing, otherwise adding
     var book: PersistentBook? = nil
 
@@ -22,16 +26,16 @@ struct AddEditView: View {
     @State private var cover: UIImage? = nil
 
     init(book: PersistentBook? = nil) {
-        self.book = book
+        self.book = book // _viewModel = StateObject( wrappedvalue: addeditviewmodel adding model context here
 
-        // Working model (same as your code)
-        _workingBook = State(initialValue: book ?? PersistentBook(title: ""))
+        // Working model
+        _workingBook = State(initialValue: book ?? PersistentBook(title: "")) //its no longer copying check addeditviewmodel
 
         // Corrected: if book exists => "Edit Book", else "Add Book"
-        _navigationTitle = State(initialValue: book == nil ? "Add Book" : "Edit Book")
+        _navigationTitle = State(initialValue: book == nil ? "Add Book" : "Edit Book") //has been added to addeditviewmodel
 
-        // IMPORTANT: initialize @State via the wrapper, not by assigning 'cover ='
-        if let data = book?.imageData, let ui = UIImage(data: data) {
+       
+        if let data = book?.imageData, let ui = UIImage(data: data) { //has been added to addeditviewmodel differently
             _cover = State(initialValue: ui)
         } else {
             _cover = State(initialValue: nil)
@@ -53,7 +57,7 @@ struct AddEditView: View {
                     }
 
                     Section(header: Text("Book Details")) {
-                        TextField("Title of the book", text: $workingBook.title)
+                        TextField("Title of the book", text: $workingBook.title) //workingbook will mostlikely change to viewmodel
                         TextField("Author", text: $workingBook.author)
 
                         Picker("Genre", selection: $workingBook.genre) {
