@@ -25,11 +25,22 @@ class AddEditViewModel: ObservableObject {
     @Published var cover: UIImage? = nil
     
     var navigationTitle: String {
-        bookToEdit != nil ? "Add Book" : "Edit Book"
+        bookToEdit == nil ? "Add Book" : "Edit Book"
     }
     
     var isSaveButtonDisabled: Bool {
-        title.isEmpty
+        let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
+
+         // Title must be nonempty after trimming
+         guard !trimmed.isEmpty else { return true }
+
+         // If creating a new book, enabled as soon as the user types a valid title
+         guard let existing = bookToEdit else { return false }
+
+         // If editing, enable only when something actually changed
+
+         let unchangedTitle = trimmed == existing.title
+         return unchangedTitle
     }
     
     
